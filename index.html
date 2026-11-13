@@ -1116,7 +1116,7 @@
         const badgeContainer = document.getElementById('status-badge-container');
         const regionBadge = (activeTab === "national") ? `
           <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] font-bold bg-amber-500/10 text-amber-300 border border-amber-500/25 uppercase tracking-widest whitespace-nowrap mr-1">
-            🇫🇷🇧🇪 France &amp; Belgique
+            Joueurs francophones
           </span>
         ` : "";
         badgeContainer.innerHTML = regionBadge + createStatusBadgeHtml(settings.status || "live");
@@ -1177,7 +1177,7 @@
         const badgeHtml = (activeTab === "national")
           ? `
             <span class="inline-flex flex-col sm:flex-row items-start sm:items-center gap-0.5 sm:gap-0 px-2 py-1 sm:py-0.5 rounded text-[10px] sm:text-[11px] font-bold bg-purple-500/10 text-purple-300 border border-purple-500/20 uppercase tracking-widest leading-tight sm:leading-normal">
-              <span>🇫🇷🇧🇪 FRANCE &amp; BELGIQUE</span>
+              <span>JOUEURS FRANCOPHONES</span>
               <span class="hidden sm:inline">&nbsp;·&nbsp;</span>
               <span>${count} ${tourneyWord} ET ${totalTrackedPlayers} ${playerWord}</span>
             </span>
@@ -1306,7 +1306,7 @@
       }
     });
 
-    // BASCULE ENTRE VUE ÉQUIPES ET VUE FRANCE & BELGIQUE
+    // BASCULE ENTRE VUE ÉQUIPES ET VUE JOUEURS FRANCOPHONES
     const casterBtn = document.getElementById('caster-float-btn');
     casterBtn.addEventListener('click', () => {
       activeTab = (activeTab === "national") ? "local" : "national";
