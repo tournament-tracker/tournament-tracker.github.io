@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Lorcana Tournament Tracker</title>
+  <title>Tournament Tracker</title>
   
   <!-- Favicon Carte de jeu TCG (Ambre) -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='20' y='10' width='60' height='80' rx='8' fill='%230f172a' stroke='%23f59e0b' stroke-width='6'/><rect x='28' y='18' width='44' height='64' rx='4' fill='none' stroke='%23fbbf24' stroke-width='2' opacity='0.6'/><polygon points='50,32 63,50 50,68 37,50' fill='%23fbbf24'/></svg>">
@@ -167,12 +167,21 @@
       </div>
 
       <!-- Footer (Glisse sous les scores) -->
-      <footer class="mt-4 py-2 text-center text-[10px] sm:text-xs text-gray-500 italic font-light tracking-wider flex items-center justify-center gap-2 flex-wrap">
-        <span>Ne pas rafraîchir, mise à jour automatique</span>
-        <span class="not-italic text-gray-700">•</span>
-        <button type="button" id="open-legal-modal-btn" class="not-italic text-gray-400 hover:text-amber-400 underline decoration-gray-600 hover:decoration-amber-400/60 underline-offset-2 transition-colors">
-          Mentions légales
-        </button>
+      <footer class="mt-4 py-2 text-center text-[10px] sm:text-xs text-gray-500 font-light tracking-wider space-y-3">
+        <div class="italic flex items-center justify-center gap-2 flex-wrap">
+          <span>Ne pas rafraîchir, mise à jour automatique</span>
+          <span class="not-italic text-gray-700">•</span>
+          <button type="button" id="open-legal-modal-btn" class="not-italic text-gray-400 hover:text-amber-400 underline decoration-gray-600 hover:decoration-amber-400/60 underline-offset-2 transition-colors">
+            Mentions légales
+          </button>
+        </div>
+
+        <div class="max-w-2xl mx-auto pt-3 border-t border-white/5 text-[10px] sm:text-[11px] text-gray-500 leading-relaxed space-y-1">
+          <p class="font-semibold text-gray-400">Avertissement Legal</p>
+          <p>Tournament Tracker est un site communautaire non-officiel créé par des fans pour les fans de Disney Lorcana. Ce site n'est ni affilié, ni approuvé, ni sponsorisé par Disney ou Ravensburger.</p>
+          <p>Disney Lorcana, tous les noms de cartes, images et contenus associés sont la propriété de Disney et Ravensburger. Tous droits réservés.</p>
+          <p class="pt-0.5 text-gray-400/80">© 2026 Tournament Tracker - Site communautaire non-officiel</p>
+        </div>
       </footer>
       
     </div>
@@ -240,7 +249,7 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7x7by4qdpyBaMBfuF7II3otP8Ewfs9jQ0alvlNb5qaewTD4ps_Rxkc7ASFOcRRimL/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCu77nro7s6opxHJtfZnYQqCAf54NiHiM_xvM0yuRIirQyX85ppviBXkyLhZehp9EbVg/exec";
     const TAB_KEY = "lorcana_active_tab";
     const COLLAPSED_TOURNAMENTS_KEY = "lorcana_collapsed_tournaments";
     const COLLAPSED_TEAMS_KEY = "lorcana_collapsed_teams";
