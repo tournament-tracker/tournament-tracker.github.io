@@ -272,8 +272,6 @@
 
     let collapsedTournamentsState = loadStoredState(COLLAPSED_TOURNAMENTS_KEY);
     let collapsedTeamsState = loadStoredState(COLLAPSED_TEAMS_KEY);
-    
-    // État global du toggle "Par équipe" par tournoi
     let teamViewActiveState = loadStoredState(TEAM_VIEW_TOGGLE_KEY);
 
     function toggleTournamentCollapse(btnEl, tourneyId) {
@@ -342,7 +340,6 @@
         }
       }
       
-      // Re-rendre les données avec la nouvelle vue
       if (currentTournamentData) {
         renderData(currentTournamentData);
       }
@@ -393,16 +390,13 @@
                 <rect x="3" y="11" width="16" height="11" rx="2"/>
               </clipPath>
             </defs>
-            <!-- Drapeau Belge en arrière-plan (décalé haut-droite) -->
             <g clip-path="url(#be-flag-clip)">
               <rect x="9" y="4" width="5.4" height="11" fill="#1f2937"/>
               <rect x="14.3" y="4" width="5.4" height="11" fill="#facc15"/>
               <rect x="19.6" y="4" width="5.4" height="11" fill="#ef4444"/>
             </g>
             <rect x="9" y="4" width="16" height="11" rx="2" stroke="rgba(255,255,255,0.45)" stroke-width="0.9"/>
-            <!-- Ombre légère entre les deux drapeaux -->
             <rect x="3.6" y="11.6" width="16" height="11" rx="2" fill="#000000" opacity="0.55"/>
-            <!-- Drapeau Français au premier plan (décalé bas-gauche) -->
             <g clip-path="url(#fr-flag-clip)">
               <rect x="3" y="11" width="5.4" height="11" fill="#2563eb"/>
               <rect x="8.3" y="11" width="5.4" height="11" fill="#ffffff"/>
@@ -421,7 +415,6 @@
       }
     }
 
-    // GESTION DU LECTEUR TWITCH
     function toggleTwitchStream() {
       if (!currentChannelName) return;
       const wrapper = document.getElementById('twitch-accordion-wrapper');
@@ -430,7 +423,6 @@
       isStreamOpen = !isStreamOpen;
 
       if (!isStreamOpen) {
-        // FERMETURE DU STREAM
         wrapper.classList.add('hidden');
         wrapper.className = "hidden overflow-hidden rounded-xl w-full transition-all duration-300";
         
@@ -445,7 +437,6 @@
           toggleBtn.classList.add('bg-purple-500/10', 'border-purple-500/20');
         }
 
-        // Si on ferme le live, on désactive aussi le mode cinéma proprement
         if (isCinemaMode) {
           toggleCinema();
         }
@@ -453,7 +444,6 @@
         setTimeout(() => { wrapper.innerHTML = ''; }, 300);
 
       } else {
-        // OUVERTURE DU STREAM
         const parentHost = encodeURIComponent(window.location.hostname || 'localhost');
         
         wrapper.innerHTML = `
@@ -465,7 +455,6 @@
               frameborder="0">
             </iframe>
             
-            <!-- BOUTON CINÉMA EN SURIMPRESSION (Aligné en hauteur avec l'engrenage Twitch) -->
             <button id="cinema-btn" type="button" onclick="toggleCinema()" class="absolute bottom-[10px] right-[142px] z-20 hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-bold bg-black/75 backdrop-blur-md text-amber-400 border border-amber-400/30 hover:bg-black/95 hover:border-amber-400/70 transition-all shadow-lg">
               Mode cinéma
             </button>
@@ -488,7 +477,6 @@
       }
     }
 
-    // GESTION DU MODE CINÉMA (PC UNIQUEMENT)
     function toggleCinema() {
       isCinemaMode = !isCinemaMode;
       
@@ -664,7 +652,6 @@
       return cleanText;
     }
 
-    // Convertit un lien de partage Google Drive en lien direct conservant la transparence PNG
     function formatDriveImageUrl(url) {
       if (!url) return "";
       if (url.includes("drive.google.com/file/d/")) {
@@ -689,8 +676,7 @@
 
       const isTourneyFinished = (tourneyStatus === "finished");
       const safeInksMap = inksMap || {};
-      
-      const isTeamViewActive = teamViewActiveState[tourneyId] !== false; // Active par défaut
+      const isTeamViewActive = teamViewActiveState[tourneyId] !== false;
 
       const getEffectiveRank = (p) => {
         if (isRound1NotFinished) return Infinity;
@@ -721,12 +707,12 @@
       let html = '';
 
       if (isTeamViewActive) {
-        // VUE PAR ÉQUIPE
         const teams = {};
         playerRows.forEach(r => {
           const [name, team, rank, points, record, round, logo] = r;
           const ink1 = r[11] ? String(r[11]).trim().toLowerCase() : "";
           const ink2 = r[12] ? String(r[12]).trim().toLowerCase() : "";
+          const matchRes = r[13] ? String(r[13]).trim() : "";
           
           let cleanTeam = (team && String(team).trim()) ? String(team).trim() : "Sans équipe";
           if (cleanTeam.toLowerCase() === "sans équipe" || cleanTeam.toLowerCase() === "sans equipe") {
@@ -736,7 +722,7 @@
           if (!teams[cleanTeam]) {
             teams[cleanTeam] = { logo: logo, players: [] };
           }
-          teams[cleanTeam].players.push({ name, rank, points, record, ink1, ink2 });
+          teams[cleanTeam].players.push({ name, rank, points, record, ink1, ink2, matchRes });
         });
   
         const sortedTeamNames = Object.keys(teams).sort((a, b) => {
@@ -830,9 +816,12 @@
             }
   
             let scoreBoxHtml = '';
-            const hasCheckmark = !isDropped && !isPartial && tourneyStatus !== "not_started" && !lowerRound.includes("attente du début de la ronde 1");
+            const matchResult = p.matchRes || "";
+            let pointsColorMode = "gray"; // "gray", "amber", or "emerald"
+
             const scoreBoxSizeClasses = "w-[64px] sm:w-[72px] h-[22px] sm:h-[26px] justify-center mr-1";
-  
+            const baseBoxClasses = `relative inline-flex items-center ${scoreBoxSizeClasses} text-xs sm:text-sm rounded bg-black/40 border font-mono font-semibold tracking-wider whitespace-nowrap`;
+
             if (isDropped) {
               scoreBoxHtml = `
                 <div class="relative inline-flex items-center ${scoreBoxSizeClasses} text-[10px] sm:text-xs rounded bg-black/40 border border-gray-600/50 font-mono font-bold tracking-wider text-gray-400 uppercase whitespace-nowrap">
@@ -857,9 +846,47 @@
                   </span>
                 </div>
               `;
-            } else if (hasCheckmark) {
+            } else if (matchResult === "W" || matchResult === "FINISHED") {
+              pointsColorMode = "amber";
               scoreBoxHtml = `
-                <div class="relative inline-flex items-center ${scoreBoxSizeClasses} text-xs sm:text-sm rounded bg-black/40 border border-emerald-500/30 font-mono font-semibold tracking-wider text-gray-300 whitespace-nowrap">
+                <div class="${baseBoxClasses} border-emerald-500/30 text-gray-300">
+                  ${recordHtml}
+                  <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 shadow-sm ring-1 ring-black/50">
+                    <svg class="w-2 h-2 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </span>
+                </div>
+              `;
+            } else if (matchResult === "L") {
+              pointsColorMode = "amber";
+              scoreBoxHtml = `
+                <div class="${baseBoxClasses} border-red-500/40 text-gray-300">
+                  ${recordHtml}
+                  <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40 shadow-sm ring-1 ring-black/50">
+                    <svg class="w-2 h-2 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </span>
+                </div>
+              `;
+            } else if (matchResult === "D") {
+              pointsColorMode = "amber";
+              scoreBoxHtml = `
+                <div class="${baseBoxClasses} border-gray-400/40 text-gray-300">
+                  ${recordHtml}
+                  <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-500/25 text-gray-300 border border-gray-400/50 shadow-sm ring-1 ring-black/50">
+                    <svg class="w-2 h-2 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 10h12M6 14h12" />
+                    </svg>
+                  </span>
+                </div>
+              `;
+            } else if (matchResult === "DONE") {
+              pointsColorMode = "emerald";
+              scoreBoxHtml = `
+                <div class="${baseBoxClasses} border-emerald-500/30 text-gray-300">
                   ${recordHtml}
                   <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 shadow-sm ring-1 ring-black/50">
                     <svg class="w-2 h-2 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -880,12 +907,12 @@
             const displayRank = isRound1NotFinished ? "-" : cleanRank;
   
             let pointsHtml = '';
-            if (isDropped || isPartial) {
+            if (isDropped || isPartial || (pointsColorMode === "gray" && !isTourneyFinished)) {
               pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-gray-400 font-semibold whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-normal text-gray-500">pts</span></span>`;
-            } else if (hasCheckmark) {
+            } else if (pointsColorMode === "emerald") {
               pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-emerald-400 font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.2)] whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-medium text-emerald-400/70">pts</span></span>`;
             } else {
-              pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-gray-400 font-semibold whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-normal text-gray-500">pts</span></span>`;
+              pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-amber-400 font-bold drop-shadow-[0_0_8px_rgba(245,158,11,0.2)] whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-medium text-amber-400/70">pts</span></span>`;
             }
   
             html += `
@@ -916,11 +943,12 @@
           const [name, team, rank, points, record, round, logo] = r;
           const ink1 = r[11] ? String(r[11]).trim().toLowerCase() : "";
           const ink2 = r[12] ? String(r[12]).trim().toLowerCase() : "";
+          const matchRes = r[13] ? String(r[13]).trim() : "";
           let cleanTeam = (team && String(team).trim()) ? String(team).trim() : "Sans équipe";
           if (cleanTeam.toLowerCase() === "sans équipe" || cleanTeam.toLowerCase() === "sans equipe") {
             cleanTeam = "Sans équipe";
           }
-          return { name, team: cleanTeam, logo, rank, points, record, ink1, ink2 };
+          return { name, team: cleanTeam, logo, rank, points, record, ink1, ink2, matchRes };
         });
 
         allPlayersParsed.sort((a, b) => {
@@ -938,7 +966,6 @@
         allPlayersParsed.forEach(p => {
           const nameClass = "text-gray-100 font-semibold";
           
-          // Récupération du logo d'équipe pour la liste
           let teamLogoHtml = defaultIconSmallSvg;
           if (p.logo) {
             teamLogoHtml = `<img src="${p.logo}" class="w-6 h-6 rounded-full object-contain bg-gray-900 border border-gray-700/80 shadow-inner flex-shrink-0">`;
@@ -981,8 +1008,11 @@
           }
 
           let scoreBoxHtml = '';
-          const hasCheckmark = !isDropped && !isPartial && tourneyStatus !== "not_started" && !lowerRound.includes("attente du début de la ronde 1");
+          const matchResult = p.matchRes || "";
+          let pointsColorMode = "gray"; // "gray", "amber", or "emerald"
+
           const scoreBoxSizeClasses = "w-[64px] sm:w-[72px] h-[22px] sm:h-[26px] justify-center mr-1";
+          const baseBoxClasses = `relative inline-flex items-center ${scoreBoxSizeClasses} text-xs sm:text-sm rounded bg-black/40 border font-mono font-semibold tracking-wider whitespace-nowrap`;
 
           if (isDropped) {
             scoreBoxHtml = `
@@ -1008,9 +1038,47 @@
                 </span>
               </div>
             `;
-          } else if (hasCheckmark) {
+          } else if (matchResult === "W" || matchResult === "FINISHED") {
+            pointsColorMode = "amber";
             scoreBoxHtml = `
-              <div class="relative inline-flex items-center ${scoreBoxSizeClasses} text-xs sm:text-sm rounded bg-black/40 border border-emerald-500/30 font-mono font-semibold tracking-wider text-gray-300 whitespace-nowrap">
+              <div class="${baseBoxClasses} border-emerald-500/30 text-gray-300">
+                ${recordHtml}
+                <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 shadow-sm ring-1 ring-black/50">
+                  <svg class="w-2 h-2 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </span>
+              </div>
+            `;
+          } else if (matchResult === "L") {
+            pointsColorMode = "amber";
+            scoreBoxHtml = `
+              <div class="${baseBoxClasses} border-red-500/40 text-gray-300">
+                ${recordHtml}
+                <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40 shadow-sm ring-1 ring-black/50">
+                  <svg class="w-2 h-2 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </span>
+              </div>
+            `;
+          } else if (matchResult === "D") {
+            pointsColorMode = "amber";
+            scoreBoxHtml = `
+              <div class="${baseBoxClasses} border-gray-400/40 text-gray-300">
+                ${recordHtml}
+                <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-500/25 text-gray-300 border border-gray-400/50 shadow-sm ring-1 ring-black/50">
+                  <svg class="w-2 h-2 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 10h12M6 14h12" />
+                  </svg>
+                </span>
+              </div>
+            `;
+          } else if (matchResult === "DONE") {
+            pointsColorMode = "emerald";
+            scoreBoxHtml = `
+              <div class="${baseBoxClasses} border-emerald-500/30 text-gray-300">
                 ${recordHtml}
                 <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 shadow-sm ring-1 ring-black/50">
                   <svg class="w-2 h-2 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -1031,12 +1099,12 @@
           const displayRank = isRound1NotFinished ? "-" : cleanRank;
 
           let pointsHtml = '';
-          if (isDropped || isPartial) {
+          if (isDropped || isPartial || (pointsColorMode === "gray" && !isTourneyFinished)) {
             pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-gray-400 font-semibold whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-normal text-gray-500">pts</span></span>`;
-          } else if (hasCheckmark) {
+          } else if (pointsColorMode === "emerald") {
             pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-emerald-400 font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.2)] whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-medium text-emerald-400/70">pts</span></span>`;
           } else {
-            pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-gray-400 font-semibold whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-normal text-gray-500">pts</span></span>`;
+            pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-amber-400 font-bold drop-shadow-[0_0_8px_rgba(245,158,11,0.2)] whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-medium text-amber-400/70">pts</span></span>`;
           }
 
           html += `
@@ -1124,7 +1192,6 @@
 
       const headerBadgeRow = document.getElementById('header-badge-row');
 
-      // CAS 1 : MODE TOURNOI UNIQUE
       if (!isMulti) {
         document.getElementById('header-status-line').classList.remove('hidden');
         if (headerBadgeRow) {
@@ -1185,7 +1252,6 @@
 
         container.innerHTML = mainToggleHtml + generateTeamsHtml(rawPlayers, settings.status || "live", settings.roundStatus || "", settings.eventId, settings.inks);
       } 
-      // CAS 2 : MODE MULTI-TOURNOIS
       else {
         const count = tournamentsList.length || Object.keys(tourneyMap).length;
         const totalTrackedPlayers = rawPlayers.length;
@@ -1256,7 +1322,6 @@
                 </div>
 
                 <div class="flex flex-col items-end justify-between gap-2 z-10 flex-shrink-0">
-                  <!-- Bouton Toggle Par équipe aligné sur le bord droit du chevron -->
                   <div class="hidden sm:flex items-center">
                     <label class="toggle-container inline-flex items-center cursor-pointer gap-1.5 group select-none">
                       <span class="toggle-text text-[11px] font-medium transition-colors whitespace-nowrap leading-none ${isTeamViewActive ? 'text-gray-300' : 'text-gray-500 group-hover:text-gray-400'}">Par équipe</span>
@@ -1268,7 +1333,6 @@
                     </label>
                   </div>
 
-                  <!-- Bouton flèche / chevron pour réduire ou afficher le tournoi -->
                   <button type="button" onclick="toggleTournamentCollapse(this, '${tourney.eventId}')" class="cursor-pointer flex-shrink-0 text-amber-400/80 hover:text-amber-300 p-1.5 sm:p-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 transition-all">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6 tourney-chevron transition-transform duration-200 ${chevronRotation}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                       <polyline points="6 9 12 15 18 9"></polyline>
@@ -1278,7 +1342,6 @@
                 
               </div>
               
-              <!-- Version mobile du toggle (sous le header si petit écran) -->
               <div class="mobile-toggle-wrapper sm:hidden px-4 py-2 border-b border-white/[0.05] flex justify-end ${isCollapsed ? 'hidden' : ''}">
                 <label class="toggle-container inline-flex items-center cursor-pointer gap-1.5 group select-none">
                   <span class="toggle-text text-[11px] font-medium transition-colors whitespace-nowrap leading-none ${isTeamViewActive ? 'text-gray-300' : 'text-gray-500'}">Par équipe</span>
@@ -1290,7 +1353,6 @@
                 </label>
               </div>
 
-              <!-- Bloc des équipes / joueurs -->
               <div class="tournament-body p-3 sm:p-4 ${isCollapsed ? 'hidden' : ''}">
                 ${teamsHtml}
               </div>
@@ -1302,7 +1364,6 @@
       }
     }
 
-    // GESTION DES MENTIONS LÉGALES
     const legalModal = document.getElementById('legal-modal');
     const openLegalModalBtn = document.getElementById('open-legal-modal-btn');
     const closeLegalModalBtn = document.getElementById('close-legal-modal-btn');
@@ -1331,7 +1392,6 @@
       }
     });
 
-    // BASCULE ENTRE VUE ÉQUIPES ET VUE JOUEURS FRANCOPHONES
     const casterBtn = document.getElementById('caster-float-btn');
     casterBtn.addEventListener('click', () => {
       activeTab = (activeTab === "national") ? "local" : "national";
