@@ -251,6 +251,7 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7x7by4qdpyBaMBfuF7II3otP8Ewfs9jQ0alvlNb5qaewTD4ps_Rxkc7ASFOcRRimL/exec";
     const TAB_KEY = "lorcana_active_tab";
+    const VISITOR_ID_KEY = "lorcana_visitor_id";
     const COLLAPSED_TOURNAMENTS_KEY = "lorcana_collapsed_tournaments";
     const COLLAPSED_TEAMS_KEY = "lorcana_collapsed_teams";
     const TEAM_VIEW_TOGGLE_KEY = "lorcana_team_view_active";
@@ -352,8 +353,28 @@
       }
     }
 
+    function getVisitorId() {
+      try {
+        let vid = sessionStorage.getItem(VISITOR_ID_KEY);
+        if (!vid) {
+          vid = (window.crypto && typeof window.crypto.randomUUID === "function")
+            ? window.crypto.randomUUID()
+            : ("v_" + Date.now().toString(36) + "_" + Math.random().toString(36).substring(2, 10));
+          sessionStorage.setItem(VISITOR_ID_KEY, vid);
+        }
+        return vid;
+      } catch (e) {
+        if (!window._fallbackVisitorId) {
+          window._fallbackVisitorId = "v_" + Date.now().toString(36) + "_" + Math.random().toString(36).substring(2, 10);
+        }
+        return window._fallbackVisitorId;
+      }
+    }
+
     function getFetchUrl() {
-      return APPS_SCRIPT_URL;
+      const vid = getVisitorId();
+      const sep = APPS_SCRIPT_URL.indexOf("?") === -1 ? "?" : "&";
+      return `${APPS_SCRIPT_URL}${sep}vid=${encodeURIComponent(vid)}`;
     }
 
     function updateCasterButton() {
