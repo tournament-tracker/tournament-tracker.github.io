@@ -39,18 +39,18 @@
     }
 
     /* Halo respirant ralenti (4.4s) */
-    @keyframes halo-amber {
+    @keyframes halo-purple {
       0%, 100% {
-        box-shadow: 0 0 4px rgba(245, 158, 11, 0.25), inset 0 0 3px rgba(245, 158, 11, 0.1);
-        border-color: rgba(245, 158, 11, 0.45);
+        box-shadow: 0 0 4px rgba(168, 85, 247, 0.3), inset 0 0 3px rgba(168, 85, 247, 0.12);
+        border-color: rgba(168, 85, 247, 0.5);
       }
       50% {
-        box-shadow: 0 0 14px rgba(245, 158, 11, 0.65), inset 0 0 6px rgba(245, 158, 11, 0.25);
-        border-color: rgba(245, 158, 11, 0.95);
+        box-shadow: 0 0 14px rgba(168, 85, 247, 0.7), inset 0 0 6px rgba(168, 85, 247, 0.28);
+        border-color: rgba(192, 132, 252, 0.95);
       }
     }
-    .animate-halo-amber {
-      animation: halo-amber 4.4s ease-in-out infinite;
+    .animate-halo-purple {
+      animation: halo-purple 4.4s ease-in-out infinite;
     }
 
     /* Mode Cinéma sur PC (>= 1024px) */
@@ -833,10 +833,10 @@
               `;
             } else if (isPartial) {
               scoreBoxHtml = `
-                <div class="relative inline-flex items-center ${scoreBoxSizeClasses} text-xs sm:text-sm rounded bg-black/60 border font-mono font-semibold tracking-wider text-gray-200 whitespace-nowrap animate-halo-amber">
+                <div class="relative inline-flex items-center ${scoreBoxSizeClasses} text-xs sm:text-sm rounded bg-black/60 border font-mono font-semibold tracking-wider text-gray-200 whitespace-nowrap animate-halo-purple">
                   ${recordHtml}
-                  <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-4 h-4 rounded-full bg-amber-400 text-slate-950 shadow-md border border-amber-200 ring-2 ring-black/60">
-                    <svg class="w-2.5 h-2.5 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-4 h-4 rounded-full bg-purple-500 text-white shadow-md border border-purple-300 ring-2 ring-black/60">
+                    <svg class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                       <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/>
                       <line x1="13" y1="19" x2="19" y2="13"/>
                       <line x1="16" y1="16" x2="20" y2="20"/>
@@ -1014,10 +1014,10 @@
             `;
           } else if (isPartial) {
             scoreBoxHtml = `
-              <div class="relative inline-flex items-center ${scoreBoxSizeClasses} text-xs sm:text-sm rounded bg-black/60 border font-mono font-semibold tracking-wider text-gray-200 whitespace-nowrap animate-halo-amber">
+              <div class="relative inline-flex items-center ${scoreBoxSizeClasses} text-xs sm:text-sm rounded bg-black/60 border font-mono font-semibold tracking-wider text-gray-200 whitespace-nowrap animate-halo-purple">
                 ${recordHtml}
-                <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-4 h-4 rounded-full bg-amber-400 text-slate-950 shadow-md border border-amber-200 ring-2 ring-black/60">
-                  <svg class="w-2.5 h-2.5 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-4 h-4 rounded-full bg-purple-500 text-white shadow-md border border-purple-300 ring-2 ring-black/60">
+                  <svg class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/>
                     <line x1="13" y1="19" x2="19" y2="13"/>
                     <line x1="16" y1="16" x2="20" y2="20"/>
