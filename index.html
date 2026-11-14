@@ -276,20 +276,15 @@
     // État global du toggle "Par équipe" par tournoi
     let teamViewActiveState = loadStoredState(TEAM_VIEW_TOGGLE_KEY);
 
-    function toggleTournamentCollapse(headerEl, tourneyId, event) {
-      // Évite que le clic sur le toggle ferme le tournoi
-      if (event && (event.target.closest('.toggle-container') || event.target.tagName.toLowerCase() === 'input')) {
-        return;
-      }
-      
+    function toggleTournamentCollapse(btnEl, tourneyId) {
       const nextState = !collapsedTournamentsState[tourneyId];
       collapsedTournamentsState[tourneyId] = nextState;
       try {
         localStorage.setItem(COLLAPSED_TOURNAMENTS_KEY, JSON.stringify(collapsedTournamentsState));
       } catch (e) {}
 
-      if (headerEl) {
-        const section = headerEl.closest('section');
+      if (btnEl) {
+        const section = btnEl.closest('section');
         if (section) {
           const bodyEl = section.querySelector('.tournament-body');
           if (bodyEl) {
@@ -301,7 +296,7 @@
           }
         }
         
-        const chevronEl = headerEl.querySelector('.tourney-chevron');
+        const chevronEl = btnEl.querySelector('.tourney-chevron');
         if (chevronEl) {
           chevronEl.classList.toggle('-rotate-90', nextState);
           chevronEl.classList.toggle('rotate-0', !nextState);
@@ -1245,7 +1240,7 @@
 
           multiHtml += `
             <section class="glass-card rounded-xl mb-5 sm:mb-6 overflow-hidden">
-              <div class="glass-header px-4 py-3 flex items-stretch justify-between gap-3 cursor-pointer select-none hover:bg-white/[0.02] transition-colors" onclick="toggleTournamentCollapse(this, '${tourney.eventId}', event)">
+              <div class="glass-header px-4 py-3 flex items-stretch justify-between gap-3">
                 
                 <div class="flex flex-col justify-center gap-1.5 min-w-0 flex-grow pr-2">
                   <h2 class="text-lg sm:text-xl font-extrabold tracking-tight leading-tight">
@@ -1262,7 +1257,7 @@
 
                 <div class="flex flex-col items-end justify-between gap-2 z-10 flex-shrink-0">
                   <!-- Bouton Toggle Par équipe aligné sur le bord droit du chevron -->
-                  <div class="hidden sm:flex items-center" onclick="event.stopPropagation()">
+                  <div class="hidden sm:flex items-center">
                     <label class="toggle-container inline-flex items-center cursor-pointer gap-1.5 group select-none">
                       <span class="toggle-text text-[11px] font-medium transition-colors whitespace-nowrap leading-none ${isTeamViewActive ? 'text-gray-300' : 'text-gray-500 group-hover:text-gray-400'}">Par équipe</span>
                       <span class="relative inline-flex items-center flex-shrink-0" style="width: 1.75rem; height: 0.875rem;">
@@ -1274,7 +1269,7 @@
                   </div>
 
                   <!-- Bouton flèche / chevron pour réduire ou afficher le tournoi -->
-                  <button type="button" class="flex-shrink-0 text-amber-400/80 hover:text-amber-300 p-1.5 sm:p-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 transition-all">
+                  <button type="button" onclick="toggleTournamentCollapse(this, '${tourney.eventId}')" class="cursor-pointer flex-shrink-0 text-amber-400/80 hover:text-amber-300 p-1.5 sm:p-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 transition-all">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6 tourney-chevron transition-transform duration-200 ${chevronRotation}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                       <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
@@ -1353,4 +1348,3 @@
   </script>
 </body>
 </html>
-```[cite: 2]
