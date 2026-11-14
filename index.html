@@ -816,7 +816,10 @@
             }
   
             let scoreBoxHtml = '';
-            const matchResult = p.matchRes || "";
+            const rawMatchResult = p.matchRes ? String(p.matchRes).trim() : "";
+            const parsedMatchResult = rawMatchResult.includes(":") ? rawMatchResult.split(":")[1] : rawMatchResult;
+            const isCompletedWithoutTag = !isDropped && !isPartial && tourneyStatus !== "not_started" && !lowerRound.includes("attente du début de la ronde 1");
+            const matchResult = parsedMatchResult || (isCompletedWithoutTag ? "DONE" : "");
             let pointsColorMode = "gray"; // "gray", "amber", or "emerald"
 
             const scoreBoxSizeClasses = "w-[64px] sm:w-[72px] h-[22px] sm:h-[26px] justify-center mr-1";
@@ -846,7 +849,7 @@
                   </span>
                 </div>
               `;
-            } else if (matchResult === "W" || matchResult === "FINISHED") {
+            } else if (matchResult === "W") {
               pointsColorMode = "amber";
               scoreBoxHtml = `
                 <div class="${baseBoxClasses} border-emerald-500/30 text-gray-300">
@@ -883,7 +886,7 @@
                   </span>
                 </div>
               `;
-            } else if (matchResult === "DONE") {
+            } else if (matchResult === "DONE" || matchResult === "FINISHED") {
               pointsColorMode = "emerald";
               scoreBoxHtml = `
                 <div class="${baseBoxClasses} border-emerald-500/30 text-gray-300">
@@ -1008,7 +1011,10 @@
           }
 
           let scoreBoxHtml = '';
-          const matchResult = p.matchRes || "";
+          const rawMatchResult = p.matchRes ? String(p.matchRes).trim() : "";
+          const parsedMatchResult = rawMatchResult.includes(":") ? rawMatchResult.split(":")[1] : rawMatchResult;
+          const isCompletedWithoutTag = !isDropped && !isPartial && tourneyStatus !== "not_started" && !lowerRound.includes("attente du début de la ronde 1");
+          const matchResult = parsedMatchResult || (isCompletedWithoutTag ? "DONE" : "");
           let pointsColorMode = "gray"; // "gray", "amber", or "emerald"
 
           const scoreBoxSizeClasses = "w-[64px] sm:w-[72px] h-[22px] sm:h-[26px] justify-center mr-1";
@@ -1038,7 +1044,7 @@
                 </span>
               </div>
             `;
-          } else if (matchResult === "W" || matchResult === "FINISHED") {
+          } else if (matchResult === "W") {
             pointsColorMode = "amber";
             scoreBoxHtml = `
               <div class="${baseBoxClasses} border-emerald-500/30 text-gray-300">
@@ -1075,7 +1081,7 @@
                 </span>
               </div>
             `;
-          } else if (matchResult === "DONE") {
+          } else if (matchResult === "DONE" || matchResult === "FINISHED") {
             pointsColorMode = "emerald";
             scoreBoxHtml = `
               <div class="${baseBoxClasses} border-emerald-500/30 text-gray-300">
