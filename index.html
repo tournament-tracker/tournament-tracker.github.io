@@ -820,7 +820,7 @@
             const parsedMatchResult = rawMatchResult.includes(":") ? rawMatchResult.split(":")[1] : rawMatchResult;
             const isCompletedWithoutTag = !isDropped && !isPartial && tourneyStatus !== "not_started" && !lowerRound.includes("attente du début de la ronde 1");
             const matchResult = parsedMatchResult || (isCompletedWithoutTag ? "DONE" : "");
-            let pointsColorMode = "gray"; // "gray", "amber", or "emerald"
+            let pointsColorMode = "gray"; // "gray" or "amber"
 
             const scoreBoxSizeClasses = "w-[64px] sm:w-[72px] h-[22px] sm:h-[26px] justify-center mr-1";
             const baseBoxClasses = `relative inline-flex items-center ${scoreBoxSizeClasses} text-xs sm:text-sm rounded bg-black/40 border font-mono font-semibold tracking-wider whitespace-nowrap`;
@@ -849,7 +849,7 @@
                   </span>
                 </div>
               `;
-            } else if (matchResult === "W") {
+            } else if (matchResult === "W" || matchResult === "DONE" || matchResult === "FINISHED") {
               pointsColorMode = "amber";
               scoreBoxHtml = `
                 <div class="${baseBoxClasses} border-emerald-500/30 text-gray-300">
@@ -886,18 +886,6 @@
                   </span>
                 </div>
               `;
-            } else if (matchResult === "DONE" || matchResult === "FINISHED") {
-              pointsColorMode = "emerald";
-              scoreBoxHtml = `
-                <div class="${baseBoxClasses} border-emerald-500/30 text-gray-300">
-                  ${recordHtml}
-                  <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 shadow-sm ring-1 ring-black/50">
-                    <svg class="w-2 h-2 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  </span>
-                </div>
-              `;
             } else {
               scoreBoxHtml = `
                 <div class="relative inline-flex items-center ${scoreBoxSizeClasses} text-xs sm:text-sm rounded bg-black/40 border border-white/5 font-mono font-semibold tracking-wider text-gray-300 whitespace-nowrap">
@@ -912,8 +900,6 @@
             let pointsHtml = '';
             if (isDropped || isPartial || (pointsColorMode === "gray" && !isTourneyFinished)) {
               pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-gray-400 font-semibold whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-normal text-gray-500">pts</span></span>`;
-            } else if (pointsColorMode === "emerald") {
-              pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-emerald-400 font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.2)] whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-medium text-emerald-400/70">pts</span></span>`;
             } else {
               pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-amber-400 font-bold drop-shadow-[0_0_8px_rgba(245,158,11,0.2)] whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-medium text-amber-400/70">pts</span></span>`;
             }
@@ -1015,7 +1001,7 @@
           const parsedMatchResult = rawMatchResult.includes(":") ? rawMatchResult.split(":")[1] : rawMatchResult;
           const isCompletedWithoutTag = !isDropped && !isPartial && tourneyStatus !== "not_started" && !lowerRound.includes("attente du début de la ronde 1");
           const matchResult = parsedMatchResult || (isCompletedWithoutTag ? "DONE" : "");
-          let pointsColorMode = "gray"; // "gray", "amber", or "emerald"
+          let pointsColorMode = "gray"; // "gray" or "amber"
 
           const scoreBoxSizeClasses = "w-[64px] sm:w-[72px] h-[22px] sm:h-[26px] justify-center mr-1";
           const baseBoxClasses = `relative inline-flex items-center ${scoreBoxSizeClasses} text-xs sm:text-sm rounded bg-black/40 border font-mono font-semibold tracking-wider whitespace-nowrap`;
@@ -1044,7 +1030,7 @@
                 </span>
               </div>
             `;
-          } else if (matchResult === "W") {
+          } else if (matchResult === "W" || matchResult === "DONE" || matchResult === "FINISHED") {
             pointsColorMode = "amber";
             scoreBoxHtml = `
               <div class="${baseBoxClasses} border-emerald-500/30 text-gray-300">
@@ -1081,18 +1067,6 @@
                 </span>
               </div>
             `;
-          } else if (matchResult === "DONE" || matchResult === "FINISHED") {
-            pointsColorMode = "emerald";
-            scoreBoxHtml = `
-              <div class="${baseBoxClasses} border-emerald-500/30 text-gray-300">
-                ${recordHtml}
-                <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-3.5 h-3.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 shadow-sm ring-1 ring-black/50">
-                  <svg class="w-2 h-2 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                </span>
-              </div>
-            `;
           } else {
             scoreBoxHtml = `
               <div class="relative inline-flex items-center ${scoreBoxSizeClasses} text-xs sm:text-sm rounded bg-black/40 border border-white/5 font-mono font-semibold tracking-wider text-gray-300 whitespace-nowrap">
@@ -1107,8 +1081,6 @@
           let pointsHtml = '';
           if (isDropped || isPartial || (pointsColorMode === "gray" && !isTourneyFinished)) {
             pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-gray-400 font-semibold whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-normal text-gray-500">pts</span></span>`;
-          } else if (pointsColorMode === "emerald") {
-            pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-emerald-400 font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.2)] whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-medium text-emerald-400/70">pts</span></span>`;
           } else {
             pointsHtml = `<span class="text-sm sm:text-base w-12 sm:w-14 text-right text-amber-400 font-bold drop-shadow-[0_0_8px_rgba(245,158,11,0.2)] whitespace-nowrap">${p.points} <span class="text-[10px] sm:text-xs font-medium text-amber-400/70">pts</span></span>`;
           }
